@@ -48,6 +48,7 @@ def trace_in_elev_coords(trace: np.ndarray, limits: TrackBounds, size):
     - limits:
     - size: size of the elevation array (assumed of shape (size, size))
     """
+
     def convert(a):
         lon, lat = a
         return np.array(

@@ -13,7 +13,7 @@ def find_elevation_file(track_bounds: TrackBounds):
     return f"n{floor(track_bounds.lat_min)}e{floor(track_bounds.lon_min):>03}.hgts"
 
 
-def load_elevation(track_bounds: TrackBounds) -> np.ndarray:
+def load_elevation_map(track_bounds: TrackBounds) -> np.ndarray:
     """
     Load elevation values from file, interpolate missing values, and apply a gaussian filter.
     """
@@ -80,3 +80,28 @@ def crop_elevation_map(elevation: np.ndarray, track_bounds: TrackBounds):
     shift_vector = [floor(y_mid - width / 2), floor(x_mid - width / 2)]
 
     return (crop_elevation_map, shift_vector)
+
+
+def load_elevations_points(track_bounds: TrackBounds, file=None):
+    if file is None:
+        file = find_elevation_file(track_bounds)
+    lon_min = floor(track_bounds.lon_min)
+    lat_max = ceil(track_bounds.lat_max)
+
+    print(f"loading elevation from file {file}")
+    size = 3601
+    elev = []
+    idx = 0
+
+    with open(file, "rb") as f:
+        while bytes := f.read(4):
+            val = struct.unpack(">f", bytes)[0]
+            val = np.nan if val == ELEVATION_NAN_VALUE else val
+            lon = lon_min + (idx % size) / (size - 1)
+            lat = lat_max - (idx // size) / size
+            elev.append([lon, lat, val])
+            idx += 1
+            if idx == 3602 * 2:
+                break
+
+    return np.array(elev)
