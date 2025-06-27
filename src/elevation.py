@@ -79,7 +79,7 @@ def crop_elevation_map(elevation: np.ndarray, track_bounds: TrackBounds):
     ]
     shift_vector = [floor(y_mid - width / 2), floor(x_mid - width / 2)]
 
-    return (crop_elevation_map, shift_vector)
+    return (cropped_elevation, shift_vector)
 
 
 def load_elevations_points(track_bounds: TrackBounds, file=None):
@@ -101,7 +101,16 @@ def load_elevations_points(track_bounds: TrackBounds, file=None):
             lat = lat_max - (idx // size) / size
             elev.append([lon, lat, val])
             idx += 1
-            if idx == 3602 * 2:
-                break
 
     return np.array(elev)
+
+
+def crop_elevation_points(points: np.ndarray, bounds: TrackBounds):
+    mask = np.ones(len(points), dtype=bool)
+
+    mask &= points[:, 0] >= bounds.lon_min
+    mask &= points[:, 0] <= bounds.lon_max
+    mask &= points[:, 1] <= bounds.lat_max
+    mask &= points[:, 1] <= bounds.lat_max
+
+    return points[mask]
