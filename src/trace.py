@@ -32,7 +32,7 @@ def load_track(trace_file: str) -> Tuple[np.ndarray, TrackBounds]:
 
         if lon < lon_min:
             lon_min = float(lon)
-        if lat > lon_max:
+        if lon > lon_max:
             lon_max = float(lon)
 
     return np.array(trace), TrackBounds(
