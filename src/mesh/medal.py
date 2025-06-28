@@ -45,4 +45,17 @@ def shape_mesh_into_medal(terrain: trimesh.Trimesh):
         trimesh.transformations.translation_matrix([center_x, center_y, dz])
     )
 
-    return trimesh.util.concatenate([terrain, ring])
+    mesh = trimesh.util.concatenate([terrain, ring])
+
+    hook = trimesh.creation.annulus(r_min=3, r_max=4.5, height=2.5, sections=100)
+
+    hook = hook.apply_transform(
+        trimesh.transformations.translation_matrix(
+            [
+                terrain.bounds[1][0] / 2 - hook.centroid[0],
+                terrain.bounds[1][1] + 1.5 - hook.centroid[1],
+                terrain.bounds[0][2] - hook.bounds[0][2],
+            ]
+        )
+    )
+    return trimesh.util.concatenate([mesh, hook])

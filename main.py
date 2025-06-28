@@ -25,7 +25,9 @@ def main():
     track = (track - [x_min, y_min]) / [scale, scale]
 
     print("Generating mesh")
-    mesh = generate_mesh(elevation, track, debug=args.debug)
+    mesh = generate_mesh(elevation, track, width=50, debug=args.debug)
+
+    mesh.merge_vertices()
 
     mesh.export("elevation.stl")
     print("Mesh exported")
