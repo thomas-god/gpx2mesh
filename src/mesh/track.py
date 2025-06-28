@@ -3,42 +3,16 @@ import trimesh
 from scipy.interpolate import RegularGridInterpolator
 from matplotlib import pyplot as plt
 
-from src.mesh.elevation import elevation_to_mesh
-from src.trace import TrackBounds
-
 
 def add_gpx_track_to_terrain(
     elevation_array,
     track_points,
-    terrain_bounds,
     width=40.0,
     target_depth=5.0,
-    base_thickness=1.0,
     track_height=0.5,
     track_width=1.0,
     debug=False,
 ):
-    """
-    Create a terrain mesh with a GPX track overlaid on top.
-
-    Parameters:
-    - elevation_array: 2D numpy array with elevation values
-    - track_points: List/array of (longitude, latitude) tuples
-    - terrain_bounds: (min_lon, max_lon, min_lat, max_lat) - geographic bounds of elevation data
-    - target_width, target_height, target_depth: Final mesh dimensions
-    - base_thickness: Thickness of the base
-    - track_height: How much the track rises above terrain (in final units)
-    - track_width: Width of the track (in final units)
-
-    Returns:
-    - Combined trimesh.Trimesh object with terrain and track
-    """
-
-    # Create the base terrain mesh
-    terrain_mesh = elevation_to_mesh(
-        elevation_array, width, width, target_depth, base_thickness
-    )
-
     # Convert track into mesh coordinates
     track_mesh_coords = track_points * width
 
@@ -61,12 +35,7 @@ def add_gpx_track_to_terrain(
         track_mesh_coords, track_elevations, track_height, track_width
     )
 
-    # Combine terrain and track meshes
-    if track_mesh is not None:
-        combined_mesh = trimesh.util.concatenate([terrain_mesh, track_mesh])
-        return combined_mesh
-    else:
-        return terrain_mesh
+    return track_mesh
 
 
 def sample_terrain_elevations(

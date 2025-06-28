@@ -4,31 +4,16 @@ import trimesh
 
 def elevation_to_mesh(
     elevation_array,
-    target_width=40.0,
-    target_height=40.0,
+    width=40.0,
     target_depth=5.0,
     base_thickness=1.0,
 ):
-    """
-    Convert a 2D elevation array to a 3D mesh with fixed final dimensions.
-
-    Parameters:
-    - elevation_array: 2D numpy array with elevation values
-    - target_width: final width of the mesh (X dimension) in mm or your units
-    - target_height: final height of the mesh (Y dimension) in mm or your units
-    - target_depth: maximum elevation range (Z dimension) in mm or your units
-    - base_thickness: thickness of the base below the lowest elevation
-
-    Returns:
-    - trimesh.Trimesh object
-    """
-
     # Get dimensions
     rows, cols = elevation_array.shape
 
     # Calculate scaling factors to fit target dimensions
-    x_scale = target_width / (cols - 1)  # Scale to fit target width
-    y_scale = target_height / (rows - 1)  # Scale to fit target height
+    x_scale = width / (cols - 1)  # Scale to fit target width
+    y_scale = width / (rows - 1)  # Scale to fit target height
 
     # Normalize elevation data to fit target depth
     elevation_min = elevation_array.min()

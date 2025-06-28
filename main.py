@@ -3,11 +3,11 @@ from src.elevation import (
     crop_elevation_map,
     load_elevation_map,
 )
-from src.mesh.track import add_gpx_track_to_terrain
+from src.mesh import generate_mesh
 from src.trace import load_track
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(
         prog="elevation", description="Generate elevation mesh from gpc file"
     )
@@ -25,7 +25,11 @@ if __name__ == "__main__":
     track = (track - [x_min, y_min]) / [scale, scale]
 
     print("Generating mesh")
-    mesh = add_gpx_track_to_terrain(elevation, track, track_bounds, debug=args.debug)
+    mesh = generate_mesh(elevation, track, debug=args.debug)
 
     mesh.export("elevation.stl")
     print("Mesh exported")
+
+
+if __name__ == "__main__":
+    main()
