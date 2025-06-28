@@ -4,8 +4,8 @@ import trimesh
 
 def elevation_to_mesh(
     elevation_array,
-    target_width=50.0,
-    target_height=50.0,
+    target_width=40.0,
+    target_height=40.0,
     target_depth=5.0,
     base_thickness=1.0,
 ):

@@ -61,25 +61,35 @@ def crop_elevation_map(elevation: np.ndarray, track_bounds: TrackBounds):
     assert rows == cols
     size = rows
 
-    x_min = floor((track_bounds.lon_min - floor(track_bounds.lon_min)) * size)
-    x_max = floor((track_bounds.lon_max - floor(track_bounds.lon_max)) * size)
+    width_c = (
+        max(
+            track_bounds.lon_max - track_bounds.lon_min,
+            track_bounds.lat_max - track_bounds.lat_min,
+        )
+        * 1.2
+    )
 
-    # 1 - lat, since rows are ordered from top to bottom, opposite to lat asc order
-    y_min = floor((1 - (track_bounds.lat_max - floor(track_bounds.lat_max))) * size)
-    y_max = floor((1 - (track_bounds.lat_min - floor(track_bounds.lat_min))) * size)
+    mid_lat = (track_bounds.lat_max + track_bounds.lat_min) / 2
+    cropped_lat_min = mid_lat - width_c / 2
+    cropped_lat_max = mid_lat + width_c / 2
+    row_min = floor((1 - (cropped_lat_max % 1)) * size)
+    row_max = ceil((1 - (cropped_lat_min % 1)) * size)
 
-    x_mid = floor((x_max + x_min) / 2)
-    y_mid = floor((y_max + y_min) / 2)
+    mid_lon = (track_bounds.lon_max + track_bounds.lon_min) / 2
+    cropped_lon_min = mid_lon - width_c / 2
+    cropped_lon_max = mid_lon + width_c / 2
+    col_min = floor((cropped_lon_min % 1) * size)
+    col_max = ceil((cropped_lon_max % 1) * size)
 
-    width = ceil(max(x_max - x_min, y_max - y_min) * 1.2)
+    print(row_min, row_max, col_min, col_max)
 
     cropped_elevation = elevation[
-        floor(y_mid - width / 2) : ceil(y_mid + width / 2),
-        floor(x_mid - width / 2) : ceil(x_mid + width / 2),
+        row_min:row_max,
+        col_min:col_max,
     ]
-    shift_vector = [floor(y_mid - width / 2), floor(x_mid - width / 2)]
-
-    return (cropped_elevation, shift_vector)
+    shift_vector = [cropped_lon_min, cropped_lat_min]
+    print(f"shift vector: {shift_vector}")
+    return (cropped_elevation, shift_vector, width_c)
 
 
 def load_elevations_points(track_bounds: TrackBounds, file=None):

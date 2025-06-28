@@ -198,3 +198,4 @@ cython_debug/
 *.hgts
 *.zip
 *.stl
+*.png
