@@ -170,4 +170,19 @@ def elevation_to_mesh(
     mesh.remove_unreferenced_vertices()
     mesh.fix_normals()
 
+    # Reflection around y axis to flip north/south orientation, without changing its center
+    center = mesh.centroid
+    translate_to_origin = trimesh.transformations.translation_matrix(-center)
+    reflect = np.array(
+        [
+            [1, 0, 0, 0],  # keep x
+            [0, -1, 0, 0],  # flip y
+            [0, 0, 1, 0],  # keep z
+            [0, 0, 0, 1],
+        ]
+    )
+    translate_back = trimesh.transformations.translation_matrix(center)
+    transforms = translate_back @ reflect @ translate_to_origin
+    mesh.apply_transform(transforms)
+
     return mesh

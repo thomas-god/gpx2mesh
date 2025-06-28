@@ -84,7 +84,7 @@ def sample_terrain_elevations(
 
     # Create coordinate grids that match the mesh coordinate system
     x_grid = np.linspace(0, width, cols)
-    y_grid = np.linspace(0, width, rows)
+    y_grid = np.linspace(width, 0, rows)
 
     # Normalize and scale elevation data (same as terrain mesh)
     elevation_min = elevation_array.min()
