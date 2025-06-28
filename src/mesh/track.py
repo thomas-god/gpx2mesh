@@ -97,30 +97,30 @@ def create_track_mesh(track_coords, track_elevations, track_height, track_width)
 
     The track is created as a ribbon/tube following the path.
     """
-    # if len(track_coords) < 2:
-    #     print("Not enough points in track")
-    #     return None
+    if len(track_coords) < 2:
+        print("Not enough points in track")
+        return None
 
-    # # Remove consecutive duplicate points (with smaller tolerance for better precision)
-    # unique_indices = [0]  # Always keep first point
-    # for i in range(1, len(track_coords)):
-    #     if not np.allclose(
-    #         track_coords[i], track_coords[i - 1], atol=0.01
-    #     ):  # Much smaller tolerance
-    #         unique_indices.append(i)
+    # Remove consecutive duplicate points (with smaller tolerance for better precision)
+    unique_indices = [0]  # Always keep first point
+    for i in range(1, len(track_coords)):
+        if not np.allclose(
+            track_coords[i], track_coords[i - 1], atol=0.01
+        ):  # Much smaller tolerance
+            unique_indices.append(i)
 
-    # if len(unique_indices) < 2:
-    #     print("Not enough unique points in track")
-    #     return None
+    if len(unique_indices) < 2:
+        print("Not enough unique points in track")
+        return None
 
-    # track_coords = track_coords[unique_indices]
-    # track_elevations = track_elevations[unique_indices]
+    track_coords = track_coords[unique_indices]
+    track_elevations = track_elevations[unique_indices]
 
-    # print(f"Track mesh creation:")
-    # print(
-    #     f"  Original points: {len(track_coords)}, After deduplication: {len(unique_indices)}"
-    # )
-    # print(f"  Track width: {track_width:.2f}, Track height: {track_height:.2f}")
+    print(f"Track mesh creation:")
+    print(
+        f"  Original points: {len(track_coords)}, After deduplication: {len(unique_indices)}"
+    )
+    print(f"  Track width: {track_width:.2f}, Track height: {track_height:.2f}")
 
     # Calculate track center line with elevated height
     track_z = track_elevations + track_height
