@@ -1,5 +1,4 @@
 import trimesh
-import numpy as np
 
 
 def shape_mesh_into_medal(terrain: trimesh.Trimesh):

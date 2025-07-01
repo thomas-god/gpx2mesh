@@ -1,4 +1,3 @@
-import array
 import struct
 import tempfile
 import numpy as np

@@ -81,7 +81,7 @@ def sample_terrain_elevations(
     # track_coords is in (x, y) format, interpolator expects (y, x)
     track_elevations = interpolator(track_coords[:, [1, 0]])
 
-    print(f"Track elevation sampling:")
+    print("Track elevation sampling:")
     print(f"  Terrain elevation range: {elevation_min:.2f} to {elevation_max:.2f}")
     print(f"  Scaled elevation range: 0.0 to {target_depth:.2f}")
     print(
@@ -116,7 +116,7 @@ def create_track_mesh(track_coords, track_elevations, track_height, track_width)
     track_coords = track_coords[unique_indices]
     track_elevations = track_elevations[unique_indices]
 
-    print(f"Track mesh creation:")
+    print("Track mesh creation:")
     print(
         f"  Original points: {len(track_coords)}, After deduplication: {len(unique_indices)}"
     )
