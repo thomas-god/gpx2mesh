@@ -2,39 +2,41 @@ import contextlib
 import sqlite3
 
 
-def create_db(filename: str = "elevation.db"):
-    """Create and initialise elevation sqlite database."""
+class ElevationDB:
+    def __init__(self, filename: str):
+        self.con = sqlite3.connect(filename)
+        self.init_db()
 
-    con = sqlite3.connect(filename)
+    def __del__(self):
+        self.con.close()
 
-    cur = con.cursor()
+    def init_db(self):
+        cur = self.con.cursor()
 
-    cur.execute("CREATE TABLE elevation(lat, lon, elevation);")
-    cur.execute("CREATE UNIQUE INDEX elevation_unique_lat_lon ON elevation(lat, lon)")
+        tables = cur.execute("SELECT name FROM sqlite_master").fetchall()
 
-    con.commit()
+        if ("elevation",) in tables:
+            return
 
-    con.close()
+        cur.execute("CREATE TABLE elevation(lat, lon, elevation);")
+        cur.execute(
+            "CREATE UNIQUE INDEX elevation_unique_lat_lon ON elevation(lat, lon)"
+        )
 
+        self.con.commit()
 
-@contextlib.contextmanager
-def get_cursor(db: str = "elevation.db"):
-    """Yield a cursor to the db and commit pending transactions before closing the transaction"""
+    @contextlib.contextmanager
+    def get_cursor(self):
+        cur = self.con.cursor()
 
-    con = sqlite3.connect(db)
-
-    cur = con.cursor()
-
-    try:
         yield cur
-        con.commit()
-    finally:
-        con.close()
+        self.con.commit()
 
-
-def insert_elevation_map(elevation, cur: sqlite3.Cursor):
-    cur.executemany(
-        """INSERT INTO elevation VALUES(?,?,?)
+    def insert_elevation_map(self, elevation):
+        cur = self.con.cursor()
+        cur.executemany(
+            """INSERT INTO elevation VALUES(?,?,?)
         ON CONFLICT(lat, lon) DO NOTHING""",
-        elevation,
-    )
+            elevation,
+        )
+        self.con.commit()
