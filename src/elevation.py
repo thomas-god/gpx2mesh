@@ -20,17 +20,14 @@ def load_elevation_map(track_bounds: TrackBounds) -> np.ndarray:
     file = find_elevation_file(track_bounds)
     print(f"loading elevation from file {file}")
     size = 3601
-    elev = np.zeros((size * size,))
-    idx = 0
 
-    with open(file, "rb") as f:
-        while bytes := f.read(4):
-            val = struct.unpack(">f", bytes)[0]
-            elev[idx] = np.nan if val == ELEVATION_NAN_VALUE else val
-            idx = idx + 1
+    elev = np.fromfile(file, dtype=">f4")
+    elev = np.where(elev == ELEVATION_NAN_VALUE, np.nan, elev)
+    elev = elev.reshape((size, size))
 
     elev = elev.reshape((size, size))
 
+    print("Filtering elevation data")
     rows, cols = elev.shape
     x, y = np.meshgrid(np.arange(cols), np.arange(rows))
 
