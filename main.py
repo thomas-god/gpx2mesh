@@ -1,4 +1,5 @@
 import argparse
+import re
 from src.elevation import (
     crop_elevation_map,
     load_elevation_map,
@@ -29,8 +30,9 @@ def main():
 
     mesh.merge_vertices()
 
-    mesh.export("elevation.stl")
-    print("Mesh exported")
+    export_file = re.sub(r"\.gpx$", ".stl", args.file)
+    mesh.export(export_file)
+    print(f"Mesh exported in {export_file}")
 
 
 if __name__ == "__main__":
