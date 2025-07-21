@@ -1,7 +1,7 @@
 from math import ceil, floor
 import struct
 import numpy as np
-from scipy.interpolate import griddata
+from scipy import ndimage
 from scipy.ndimage import gaussian_filter
 
 from src.trace import TrackBounds
@@ -25,24 +25,9 @@ def load_elevation_map(track_bounds: TrackBounds) -> np.ndarray:
     elev = np.where(elev == ELEVATION_NAN_VALUE, np.nan, elev)
     elev = elev.reshape((size, size))
 
-    elev = elev.reshape((size, size))
-
-    print("Filtering elevation data")
-    rows, cols = elev.shape
-    x, y = np.meshgrid(np.arange(cols), np.arange(rows))
-
-    valid_mask = ~np.isnan(elev)
-    valid_points = np.column_stack([x[valid_mask], y[valid_mask]])
-    valid_values = elev[valid_mask]
-
     nan_mask = np.isnan(elev)
-    nan_points = np.column_stack([x[nan_mask], y[nan_mask]])
-
-    interpolated_values = griddata(
-        valid_points, valid_values, nan_points, method="nearest"
-    )
-
-    elev[nan_mask] = interpolated_values
+    _, indices = ndimage.distance_transform_edt(nan_mask, return_indices=True)
+    elev[nan_mask] = elev[tuple(indices[:, nan_mask])]
 
     elev = gaussian_filter(elev, sigma=3, radius=4)
 
