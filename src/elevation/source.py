@@ -1,4 +1,6 @@
 import io
+from itertools import product
+from math import floor
 import os
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -7,8 +9,27 @@ from dotenv import dotenv_values
 import requests
 import zipfile
 
+from src.trace import TrackBounds
+
 
 config = dotenv_values(".env")
+
+
+def get_filenames(bounds: TrackBounds) -> List[str]:
+    return [
+        _map_filename(lat, lon)
+        for lat, lon in product(
+            range(floor(bounds.lat_min), floor(bounds.lat_max + 1)),
+            range(floor(bounds.lon_min), floor(bounds.lon_max + 1)),
+        )
+    ]
+
+
+def _map_filename(lat: int, lon: int) -> str:
+    _lat = f"{'n' if lat >= 0 else 's'}{abs(floor(lat)):>02}"
+    _lon = f"{'e' if lon >= 0 else 'w'}{abs(floor(lon)):>03}"
+
+    return _lat + _lon + ".hgts"
 
 
 def get_files(files: List[str]):
