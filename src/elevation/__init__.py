@@ -1,6 +1,5 @@
 from math import ceil, floor
 import os
-import struct
 from dotenv import dotenv_values
 import numpy as np
 from scipy import ndimage
@@ -77,37 +76,3 @@ def crop_elevation_map(elevation: np.ndarray, track_bounds: TrackBounds):
     shift_vector = [cropped_lon_min, cropped_lat_min]
     print(f"shift vector: {shift_vector}")
     return (cropped_elevation, shift_vector, width_c)
-
-
-def load_elevations_points(track_bounds: TrackBounds, file=None):
-    if file is None:
-        file = find_elevation_file(track_bounds)
-    lon_min = floor(track_bounds.lon_min)
-    lat_max = ceil(track_bounds.lat_max)
-
-    print(f"loading elevation from file {file}")
-    size = 3601
-    elev = []
-    idx = 0
-
-    with open(file, "rb") as f:
-        while bytes := f.read(4):
-            val = struct.unpack(">f", bytes)[0]
-            val = np.nan if val == ELEVATION_NAN_VALUE else val
-            lon = lon_min + (idx % size) / (size - 1)
-            lat = lat_max - (idx // size) / size
-            elev.append([lon, lat, val])
-            idx += 1
-
-    return np.array(elev)
-
-
-def crop_elevation_points(points: np.ndarray, bounds: TrackBounds):
-    mask = np.ones(len(points), dtype=bool)
-
-    mask &= points[:, 0] >= bounds.lon_min
-    mask &= points[:, 0] <= bounds.lon_max
-    mask &= points[:, 1] <= bounds.lat_max
-    mask &= points[:, 1] <= bounds.lat_max
-
-    return points[mask]
