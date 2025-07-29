@@ -1,5 +1,5 @@
-from src.elevation.source import get_filenames
-from src.trace import TrackBounds
+from gpx2mesh.elevation.source import get_filenames
+from gpx2mesh.trace import TrackBounds
 
 
 def test_filename_mapping_single_file():

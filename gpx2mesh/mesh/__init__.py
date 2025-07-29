@@ -1,7 +1,7 @@
 import trimesh
-from src.mesh.medal import shape_mesh_into_medal
-from src.mesh.elevation import elevation_to_mesh
-from src.mesh.track import add_gpx_track_to_terrain
+from gpx2mesh.mesh.medal import shape_mesh_into_medal
+from gpx2mesh.mesh.elevation import elevation_to_mesh
+from gpx2mesh.mesh.track import add_gpx_track_to_terrain
 
 
 def generate_mesh(

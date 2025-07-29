@@ -5,8 +5,8 @@ import numpy as np
 from scipy import ndimage
 from scipy.ndimage import gaussian_filter
 
-from src.elevation.source import get_files
-from src.trace import TrackBounds
+from gpx2mesh.elevation.source import get_files
+from gpx2mesh.trace import TrackBounds
 
 ELEVATION_NAN_VALUE = -32768
 

@@ -1,4 +1,4 @@
-# 3D printing
+# gpx2mesh
 
 This project uses [uv](https://docs.astral.sh/uv/getting-started/installation/)
 to manage its dependencies. Run the following to install a matching Python

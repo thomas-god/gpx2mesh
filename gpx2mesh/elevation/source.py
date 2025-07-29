@@ -9,7 +9,7 @@ from dotenv import dotenv_values
 import requests
 import zipfile
 
-from src.trace import TrackBounds
+from gpx2mesh.trace import TrackBounds
 
 
 config = dotenv_values(".env")

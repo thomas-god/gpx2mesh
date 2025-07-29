@@ -6,3 +6,5 @@ check:
 
 tests:
 	uv run pytest
+
+all: format check tests
