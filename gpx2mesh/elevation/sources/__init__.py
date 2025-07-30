@@ -27,6 +27,7 @@ class AssetsFolderProvider(IGetElevationFiles):
     """Provide elevation file location from a given assets folder."""
 
     def __init__(self, assets: Path):
+        os.makedirs(assets, exist_ok=True)
         self.assets = assets
 
     def get_paths(self, files) -> List[Path]:
@@ -84,6 +85,7 @@ class NasaProvider(IGetElevationFiles):
     NASA EarthData."""
 
     def __init__(self, assets: Path, connection: NasaConnection):
+        os.makedirs(assets, exist_ok=True)
         self.assets = assets
         self.connection = connection
 

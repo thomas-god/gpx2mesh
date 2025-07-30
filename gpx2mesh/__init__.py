@@ -7,7 +7,9 @@ from gpx2mesh.mesh import generate_mesh
 from gpx2mesh.trace import load_track
 
 
-def build_mesh(filename: str, elevation_files_provider: IGetElevationFiles, debug=False):
+def build_mesh(
+    filename: str, elevation_files_provider: IGetElevationFiles, debug=False
+):
     track, track_bounds = load_track(filename)
 
     print(f"Track bounds: {track_bounds}")
