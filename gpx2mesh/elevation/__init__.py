@@ -1,12 +1,10 @@
 from math import ceil, floor
-import os
-from dotenv import dotenv_values
 import numpy as np
 from scipy import ndimage
 from scipy.ndimage import gaussian_filter
 
-from gpx2mesh.elevation.source import get_files
 from gpx2mesh.trace import TrackBounds
+from gpx2mesh.elevation.sources import IGetElevationFiles
 
 ELEVATION_NAN_VALUE = -32768
 
@@ -15,17 +13,19 @@ def find_elevation_file(track_bounds: TrackBounds):
     return f"n{floor(track_bounds.lat_min):>02}e{floor(track_bounds.lon_min):>03}.hgts"
 
 
-def load_elevation_map(track_bounds: TrackBounds) -> np.ndarray:
+def load_elevation_map(
+    track_bounds: TrackBounds, files_provider: IGetElevationFiles
+) -> np.ndarray:
     """
     Load elevation values from file, interpolate missing values, and apply a gaussian filter.
     """
-    config = dotenv_values(".env")
     file = find_elevation_file(track_bounds)
-    get_files([file])
-    print(f"loading elevation from file {file}")
+    paths = files_provider.get_paths([file])
+
+    print(f"loading elevation from file {paths[0]}")
     size = 3601
 
-    elev = np.fromfile(os.path.join(config["ASSETS"], file), dtype=">f4")
+    elev = np.fromfile(paths[0], dtype=">f4")
     elev = np.where(elev == ELEVATION_NAN_VALUE, np.nan, elev)
     elev = elev.reshape((size, size))
 

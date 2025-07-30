@@ -71,7 +71,7 @@ class NasaConnection:
         """Snippet adapted from https://urs.earthdata.nasa.gov/documentation/for_users/data_access/python"""
         url = f"{self.url}/NASADEM_SHHP_{filename}/NASADEM_SHHP_{filename}.zip"
         r1 = self.session.request("get", url)
-        r = self.session.get(r1.url, auth=self._auth)
+        r = self.session.get(r1.url, auth=self.session.auth)
 
         if not r.ok:
             raise NasaConnectionError(r.status_code)

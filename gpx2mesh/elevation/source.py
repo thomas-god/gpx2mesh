@@ -54,7 +54,6 @@ def get_files(files: List[str]):
             filename = file.removesuffix(".hgts")
             url = f"{config['URL_PREFIX']}/NASADEM_SHHP_{filename}/NASADEM_SHHP_{filename}.zip"
             r1 = session.request("get", url)
-
             r = session.get(r1.url, auth=(config["LOGIN"], config["PWD"]))
 
             if r.ok:
