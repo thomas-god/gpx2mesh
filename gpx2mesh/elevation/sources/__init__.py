@@ -1,7 +1,12 @@
 import abc
+import io
 import os
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import List
+import zipfile
+
+import requests
 
 
 class ElevationFileNotFoundError(Exception):
@@ -24,7 +29,7 @@ class AssetsFolderProvider(IGetElevationFiles):
     def __init__(self, assets: Path):
         self.assets = assets
 
-    def get_paths(self, files):
+    def get_paths(self, files) -> List[Path]:
         """Raise ElevationFileNotFoundError if some files cannot be found."""
 
         paths = []
@@ -38,5 +43,79 @@ class AssetsFolderProvider(IGetElevationFiles):
 
         if len(missing_files) > 0:
             raise ElevationFileNotFoundError(missing_files)
+
+        return paths
+
+
+class NasaConnectionError(Exception):
+    def __init__(self, error_code):
+        self.error_code = error_code
+
+
+class NasaConnection:
+    def __init__(
+        self,
+        user: str,
+        pwd: str,
+        url: str,
+    ):
+        self.auth = (user, pwd)
+        self.url = url
+        self.session = requests.Session()
+        self.session.auth = self.auth
+
+    def __del__(self):
+        self.session.close()
+
+    def fetch(self, filename):
+        """Snippet adapted from https://urs.earthdata.nasa.gov/documentation/for_users/data_access/python"""
+        url = f"{self.url}/NASADEM_SHHP_{filename}/NASADEM_SHHP_{filename}.zip"
+        r1 = self.session.request("get", url)
+        r = self.session.get(r1.url, auth=self._auth)
+
+        if not r.ok:
+            raise NasaConnectionError(r.status_code)
+
+        return r.content
+
+
+class NasaProvider(IGetElevationFiles):
+    """Look for elevation files in a folder and try to download missing files from
+    NASA EarthData."""
+
+    def __init__(self, assets: Path, connection: NasaConnection):
+        self.assets = assets
+        self.connection = connection
+
+    def get_paths(self, files: List[str]) -> List[Path]:
+        paths = []
+        missing_files = []
+
+        for file in files:
+            if os.path.exists(self.assets / file):
+                paths.append(self.assets / file)
+            else:
+                missing_files.append(file)
+
+        files_in_error = []
+        for file in missing_files:
+            filename = file.removesuffix(".hgts")
+
+            try:
+                content = self.connection.fetch(filename)
+                z = zipfile.ZipFile(io.BytesIO(content))
+                with TemporaryDirectory() as tmpdir:
+                    z.extractall(tmpdir)
+                    Path(os.path.join(tmpdir, file)).rename(self.assets / file)
+                    paths.append(self.assets / file)
+                    print(f"Downloaded elevation file {file}")
+            except NasaConnectionError as exc:
+                files_in_error.append(filename)
+                print(
+                    f"Error when trying to download {file}: response has {exc.error_code}"
+                )
+
+        if len(files_in_error) > 0:
+            raise ElevationFileNotFoundError(files_in_error)
 
         return paths
