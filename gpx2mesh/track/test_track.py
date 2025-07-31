@@ -2,7 +2,7 @@ from tempfile import NamedTemporaryFile
 
 import pytest
 
-from gpx2mesh.trace import InvalidTrackFile, TrackBounds, load_track
+from gpx2mesh.track import InvalidTrackFile, TrackBounds, load_track
 
 
 def test_load_track():

@@ -4,7 +4,7 @@ from gpx2mesh.elevation import (
 )
 from gpx2mesh.elevation.sources import IGetElevationFiles
 from gpx2mesh.mesh import generate_mesh
-from gpx2mesh.trace import load_track
+from gpx2mesh.track import load_track
 
 
 def build_mesh(

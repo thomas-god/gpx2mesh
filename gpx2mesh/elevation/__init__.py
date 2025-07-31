@@ -1,16 +1,31 @@
+from itertools import product
 from math import ceil, floor
+from typing import List
 import numpy as np
 from scipy import ndimage
 from scipy.ndimage import gaussian_filter
 
-from gpx2mesh.trace import TrackBounds
+from gpx2mesh.track import TrackBounds
 from gpx2mesh.elevation.sources import IGetElevationFiles
 
 ELEVATION_NAN_VALUE = -32768
 
 
-def find_elevation_file(track_bounds: TrackBounds):
-    return f"n{floor(track_bounds.lat_min):>02}e{floor(track_bounds.lon_min):>03}.hgts"
+def get_filenames(bounds: TrackBounds) -> List[str]:
+    return [
+        _map_filename(lat, lon)
+        for lat, lon in product(
+            range(floor(bounds.lat_min), floor(bounds.lat_max + 1)),
+            range(floor(bounds.lon_min), floor(bounds.lon_max + 1)),
+        )
+    ]
+
+
+def _map_filename(lat: int, lon: int) -> str:
+    _lat = f"{'n' if lat >= 0 else 's'}{abs(floor(lat)):>02}"
+    _lon = f"{'e' if lon >= 0 else 'w'}{abs(floor(lon)):>03}"
+
+    return _lat + _lon + ".hgts"
 
 
 def load_elevation_map(
@@ -19,8 +34,8 @@ def load_elevation_map(
     """
     Load elevation values from file, interpolate missing values, and apply a gaussian filter.
     """
-    file = find_elevation_file(track_bounds)
-    paths = files_provider.get_paths([file])
+    files = get_filenames(track_bounds)
+    paths = files_provider.get_paths(files)
 
     print(f"loading elevation from file {paths[0]}")
     size = 3601
