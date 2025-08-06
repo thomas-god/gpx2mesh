@@ -30,7 +30,7 @@ jobs:
         uses: astral-sh/setup-uv@v6
 
       - name: Build release distributions
-        run: uv publish
+        run: uv build
 
       - name: Upload distributions
         uses: actions/upload-artifact@v4
