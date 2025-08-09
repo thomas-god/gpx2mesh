@@ -231,7 +231,7 @@ wheels = [
 
 [[package]]
 name = "gpx2mesh"
-version = "0.1.1rc1"
+version = "0.1.1rc2"
 source = { editable = "." }
 dependencies = [
     { name = "ipympl" },

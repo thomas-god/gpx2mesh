@@ -1,6 +1,6 @@
 [project]
 name = "gpx2mesh"
-version = "0.1.1rc1"
+version = "0.1.1rc2"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
