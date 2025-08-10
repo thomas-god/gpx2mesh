@@ -2,6 +2,7 @@ import abc
 import io
 import os
 from pathlib import Path
+import shutil
 from tempfile import TemporaryDirectory
 from typing import List
 import zipfile
@@ -108,7 +109,7 @@ class NasaProvider(IGetElevationFiles):
                 z = zipfile.ZipFile(io.BytesIO(content))
                 with TemporaryDirectory() as tmpdir:
                     z.extractall(tmpdir)
-                    Path(os.path.join(tmpdir, file)).rename(self.assets / file)
+                    shutil.move(Path(tmpdir) / file, self.assets / file)
                     paths.append(self.assets / file)
                     print(f"Downloaded elevation file {file}")
             except NasaConnectionError as exc:
